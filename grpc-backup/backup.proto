@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+service BackupService {
+  rpc UploadFile (stream FileChunk) returns (UploadStatus);
+  rpc DownloadFile (FileRequest) returns (stream FileChunk);
+  rpc ListFiles (Empty) returns (FileList);
+  rpc DeleteFile (FileRequest) returns (DeleteStatus);
+}
+
+message FileChunk {
+  string filename = 1;
+  bytes content = 2;
+}
+
+message UploadStatus {
+  bool success = 1;
+  string message = 2;
+}
+
+message FileRequest {
+  string filename = 1;
+}
+
+message FileList {
+  repeated string filenames = 1;
+}
+
+message DeleteStatus {
+  bool success = 1;
+  string message = 2;
+}
+
+message Empty {}
