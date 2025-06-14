@@ -22,27 +22,26 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 _sym_db = _symbol_database.Default()
 
 
+from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0c\x62\x61\x63kup.proto\".\n\tFileChunk\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x02 \x01(\x0c\"0\n\x0cUploadStatus\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\"\x1f\n\x0b\x46ileRequest\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\"\x1d\n\x08\x46ileList\x12\x11\n\tfilenames\x18\x01 \x03(\t\"0\n\x0c\x44\x65leteStatus\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\"\x07\n\x05\x45mpty2\xb1\x01\n\rBackupService\x12)\n\nUploadFile\x12\n.FileChunk\x1a\r.UploadStatus(\x01\x12*\n\x0c\x44ownloadFile\x12\x0c.FileRequest\x1a\n.FileChunk0\x01\x12\x1e\n\tListFiles\x12\x06.Empty\x1a\t.FileList\x12)\n\nDeleteFile\x12\x0c.FileRequest\x1a\r.DeleteStatusb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0c\x62\x61\x63kup.proto\x1a\x1bgoogle/protobuf/empty.proto\".\n\tFileChunk\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x02 \x01(\x0c\"0\n\x0cUploadStatus\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\"\x1f\n\x0b\x46ileRequest\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\"\x1d\n\x08\x46ileList\x12\x11\n\tfilenames\x18\x01 \x03(\t\"0\n\x0c\x44\x65leteStatus\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t2\xbd\x01\n\rBackupService\x12\'\n\nUploadFile\x12\n.FileChunk\x1a\r.UploadStatus\x12(\n\x0c\x44ownloadFile\x12\x0c.FileRequest\x1a\n.FileChunk\x12.\n\tListFiles\x12\x16.google.protobuf.Empty\x1a\t.FileList\x12)\n\nDeleteFile\x12\x0c.FileRequest\x1a\r.DeleteStatusb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'backup_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_FILECHUNK']._serialized_start=16
-  _globals['_FILECHUNK']._serialized_end=62
-  _globals['_UPLOADSTATUS']._serialized_start=64
-  _globals['_UPLOADSTATUS']._serialized_end=112
-  _globals['_FILEREQUEST']._serialized_start=114
-  _globals['_FILEREQUEST']._serialized_end=145
-  _globals['_FILELIST']._serialized_start=147
-  _globals['_FILELIST']._serialized_end=176
-  _globals['_DELETESTATUS']._serialized_start=178
-  _globals['_DELETESTATUS']._serialized_end=226
-  _globals['_EMPTY']._serialized_start=228
-  _globals['_EMPTY']._serialized_end=235
-  _globals['_BACKUPSERVICE']._serialized_start=238
-  _globals['_BACKUPSERVICE']._serialized_end=415
+  _globals['_FILECHUNK']._serialized_start=45
+  _globals['_FILECHUNK']._serialized_end=91
+  _globals['_UPLOADSTATUS']._serialized_start=93
+  _globals['_UPLOADSTATUS']._serialized_end=141
+  _globals['_FILEREQUEST']._serialized_start=143
+  _globals['_FILEREQUEST']._serialized_end=174
+  _globals['_FILELIST']._serialized_start=176
+  _globals['_FILELIST']._serialized_end=205
+  _globals['_DELETESTATUS']._serialized_start=207
+  _globals['_DELETESTATUS']._serialized_end=255
+  _globals['_BACKUPSERVICE']._serialized_start=258
+  _globals['_BACKUPSERVICE']._serialized_end=447
 # @@protoc_insertion_point(module_scope)

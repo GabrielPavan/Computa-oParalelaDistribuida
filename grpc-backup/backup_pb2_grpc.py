@@ -4,6 +4,7 @@ import grpc
 import warnings
 
 import backup_pb2 as backup__pb2
+from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 
 GRPC_GENERATED_VERSION = '1.73.0'
 GRPC_VERSION = grpc.__version__
@@ -34,19 +35,19 @@ class BackupServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.UploadFile = channel.stream_unary(
+        self.UploadFile = channel.unary_unary(
                 '/BackupService/UploadFile',
                 request_serializer=backup__pb2.FileChunk.SerializeToString,
                 response_deserializer=backup__pb2.UploadStatus.FromString,
                 _registered_method=True)
-        self.DownloadFile = channel.unary_stream(
+        self.DownloadFile = channel.unary_unary(
                 '/BackupService/DownloadFile',
                 request_serializer=backup__pb2.FileRequest.SerializeToString,
                 response_deserializer=backup__pb2.FileChunk.FromString,
                 _registered_method=True)
         self.ListFiles = channel.unary_unary(
                 '/BackupService/ListFiles',
-                request_serializer=backup__pb2.Empty.SerializeToString,
+                request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
                 response_deserializer=backup__pb2.FileList.FromString,
                 _registered_method=True)
         self.DeleteFile = channel.unary_unary(
@@ -59,7 +60,7 @@ class BackupServiceStub(object):
 class BackupServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def UploadFile(self, request_iterator, context):
+    def UploadFile(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -86,19 +87,19 @@ class BackupServiceServicer(object):
 
 def add_BackupServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'UploadFile': grpc.stream_unary_rpc_method_handler(
+            'UploadFile': grpc.unary_unary_rpc_method_handler(
                     servicer.UploadFile,
                     request_deserializer=backup__pb2.FileChunk.FromString,
                     response_serializer=backup__pb2.UploadStatus.SerializeToString,
             ),
-            'DownloadFile': grpc.unary_stream_rpc_method_handler(
+            'DownloadFile': grpc.unary_unary_rpc_method_handler(
                     servicer.DownloadFile,
                     request_deserializer=backup__pb2.FileRequest.FromString,
                     response_serializer=backup__pb2.FileChunk.SerializeToString,
             ),
             'ListFiles': grpc.unary_unary_rpc_method_handler(
                     servicer.ListFiles,
-                    request_deserializer=backup__pb2.Empty.FromString,
+                    request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                     response_serializer=backup__pb2.FileList.SerializeToString,
             ),
             'DeleteFile': grpc.unary_unary_rpc_method_handler(
@@ -118,7 +119,7 @@ class BackupService(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def UploadFile(request_iterator,
+    def UploadFile(request,
             target,
             options=(),
             channel_credentials=None,
@@ -128,8 +129,8 @@ class BackupService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.stream_unary(
-            request_iterator,
+        return grpc.experimental.unary_unary(
+            request,
             target,
             '/BackupService/UploadFile',
             backup__pb2.FileChunk.SerializeToString,
@@ -155,7 +156,7 @@ class BackupService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_stream(
+        return grpc.experimental.unary_unary(
             request,
             target,
             '/BackupService/DownloadFile',
@@ -186,7 +187,7 @@ class BackupService(object):
             request,
             target,
             '/BackupService/ListFiles',
-            backup__pb2.Empty.SerializeToString,
+            google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
             backup__pb2.FileList.FromString,
             options,
             channel_credentials,
