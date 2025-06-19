@@ -2,7 +2,6 @@ import grpc
 from concurrent import futures
 import time
 import os
-
 import backup_pb2
 import backup_pb2_grpc
 
@@ -11,43 +10,71 @@ BACKUP_FOLDER = "backup_storage"
 os.makedirs(BACKUP_FOLDER, exist_ok=True)
 
 class BackupService(backup_pb2_grpc.BackupServiceServicer):
-    def UploadFile(self, request_iterator, context):
-        filename = None
-        with open(os.path.join(BACKUP_FOLDER, "temp_upload"), "wb") as f:
-            for chunk in request_iterator:
-                filename = chunk.filename
-                f.write(chunk.content)
-        if filename:
-            os.rename(os.path.join(BACKUP_FOLDER, "temp_upload"), os.path.join(BACKUP_FOLDER, filename))
-            return backup_pb2.UploadStatus(success=True, message=f"Arquivo {filename} enviado com sucesso")
-        else:
-            return backup_pb2.UploadStatus(success=False, message="Nenhum dado recebido")
-
+    def UploadFile(self, request, context):
+        filename = request.filename
+        content = request.content
+        try:
+            with open(f'backup_storage/{filename}', 'wb') as f:
+                f.write(content)
+            return backup_pb2.UploadStatus(
+                success=True,
+                message="Arquivo enviado com sucesso."
+            )
+        except Exception as e:
+            return backup_pb2.UploadStatus(
+                success=False,
+                message=f"Erro ao salvar arquivo: {e}"
+            )
     def DownloadFile(self, request, context):
-        filepath = os.path.join(BACKUP_FOLDER, request.filename)
-        if not os.path.exists(filepath):
-            context.set_details('Arquivo não encontrado')
-            context.set_code(grpc.StatusCode.NOT_FOUND)
-            return
+        filename = request.filename
+        try:
+            with open(f'backup_storage/{filename}', 'rb') as f:
+                content = f.read()
 
-        with open(filepath, "rb") as f:
-            while chunk := f.read(1024 * 1024):
-                yield backup_pb2.FileChunk(filename=request.filename, content=chunk)
+            return backup_pb2.FileChunk(
+                filename=filename,
+                content=content
+            )
+        except FileNotFoundError:
+            return backup_pb2.FileChunk(
+                filename=filename,
+                content=b''
+            )
 
     def ListFiles(self, request, context):
-        files = os.listdir(BACKUP_FOLDER)
-        return backup_pb2.FileList(filenames=files)
+        try:
+            files = os.listdir('backup_storage')
+            return backup_pb2.FileList(filenames=files)
+        except Exception as e:
+            return backup_pb2.FileList(filenames=[])
 
     def DeleteFile(self, request, context):
-        filepath = os.path.join(BACKUP_FOLDER, request.filename)
-        if os.path.exists(filepath):
-            os.remove(filepath)
-            return backup_pb2.DeleteStatus(success=True, message="Arquivo deletado com sucesso")
-        else:
-            return backup_pb2.DeleteStatus(success=False, message="Arquivo não encontrado")
+        filename = request.filename
+        try:
+            os.remove(f'backup_storage/{filename}')
+            return backup_pb2.DeleteStatus(
+                success=True,
+                message="Arquivo deletado com sucesso."
+            )
+        except FileNotFoundError:
+            return backup_pb2.DeleteStatus(
+                success=False,
+                message="Arquivo não encontrado."
+            )
+        except Exception as e:
+            return backup_pb2.DeleteStatus(
+                success=False,
+                message=f"Erro ao deletar arquivo: {e}"
+            )
 
 def serve():
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    server = grpc.server(
+        futures.ThreadPoolExecutor(max_workers=10),
+        options=[
+            ('grpc.max_receive_message_length', 200 * 1024 * 1024), 
+            ('grpc.max_send_message_length', 200 * 1024 * 1024),
+        ]
+    )
     backup_pb2_grpc.add_BackupServiceServicer_to_server(BackupService(), server)
     server.add_insecure_port('[::]:50051')
     server.start()

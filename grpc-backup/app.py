@@ -2,10 +2,17 @@ import streamlit as st
 import grpc
 import backup_pb2
 import backup_pb2_grpc
+from google.protobuf.empty_pb2 import Empty
 import os
 
 # Configurações do cliente gRPC
-channel = grpc.insecure_channel('localhost:50051')
+channel = grpc.insecure_channel(
+        'localhost:50051',
+        options=[
+            ('grpc.max_receive_message_length', 200 * 1024 * 1024), 
+            ('grpc.max_send_message_length', 200 * 1024 * 1024),
+        ]
+    )
 stub = backup_pb2_grpc.BackupServiceStub(channel)
 
 st.set_page_config(page_title="Sistema de Backup gRPC", page_icon="💾")
@@ -21,11 +28,11 @@ uploaded_file = st.file_uploader("Escolha um arquivo para enviar")
 if uploaded_file is not None:
     if st.button("Enviar"):
         file_content = uploaded_file.read()
-        response = stub.UploadFile(backup_pb2.File(
+        response = stub.UploadFile(backup_pb2.FileChunk(
             filename=uploaded_file.name,
             content=file_content
         ))
-        if response.status:
+        if response.success:
             st.success(f"Arquivo '{uploaded_file.name}' enviado com sucesso!")
         else:
             st.error(f"Erro ao enviar o arquivo '{uploaded_file.name}'")
@@ -34,7 +41,7 @@ if uploaded_file is not None:
 # 📄 Listar Arquivos
 st.header("📄 Arquivos no Servidor")
 if st.button("Listar Arquivos"):
-    response = stub.ListFiles(backup_pb2.Empty())
+    response = stub.ListFiles(Empty())
     if response.filenames:
         st.write("### Arquivos Disponíveis:")
         for file in response.filenames:
@@ -66,7 +73,7 @@ delete_file = st.text_input("Digite o nome do arquivo para deletar")
 
 if st.button("Deletar"):
     response = stub.DeleteFile(backup_pb2.FileRequest(filename=delete_file))
-    if response.status:
+    if response.success:
         st.success(f"Arquivo '{delete_file}' deletado com sucesso.")
     else:
         st.error(f"Erro ao deletar o arquivo '{delete_file}' ou arquivo não encontrado.")
